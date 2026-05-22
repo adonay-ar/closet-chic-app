@@ -62,6 +62,8 @@ export class TabPedidosPage {
   clientes: Cliente[] = [];
   pedidos: Pedido[] = [];
   filtroFecha = '';
+  filtroFechaTexto = '';
+  formFechaPedido = this.formatFecha(new Date().toISOString().slice(0, 10));
   formVisible = false;
   guardando = false;
   totalPagadoMonto = 0;
@@ -95,16 +97,31 @@ export class TabPedidosPage {
   }
 
   async filtrarPorFecha(): Promise<void> {
+    if (!this.filtroFechaTexto.trim()) {
+      this.filtroFecha = '';
+      await this.loadData();
+      return;
+    }
+
+    const fecha = this.parseFechaTexto(this.filtroFechaTexto);
+    if (!fecha) {
+      await this.showAlert('Fecha inválida', 'Usa el formato dd-mm-yyyy.');
+      return;
+    }
+
+    this.filtroFecha = fecha;
     await this.loadData();
   }
 
   async limpiarFiltro(): Promise<void> {
     this.filtroFecha = '';
+    this.filtroFechaTexto = '';
     await this.loadData();
   }
 
   nuevoPedido(): void {
     this.pedidoForm = this.emptyPedido();
+    this.formFechaPedido = this.formatFecha(this.pedidoForm.fechaPedido);
     if (this.clientes.length === 1 && this.clientes[0].id) {
       this.pedidoForm.clienteId = this.clientes[0].id;
     }
@@ -113,21 +130,30 @@ export class TabPedidosPage {
 
   editarPedido(pedido: Pedido): void {
     this.pedidoForm = { ...pedido };
+    this.formFechaPedido = this.formatFecha(pedido.fechaPedido);
     this.formVisible = true;
   }
 
   cancelar(): void {
     this.pedidoForm = this.emptyPedido();
+    this.formFechaPedido = this.formatFecha(this.pedidoForm.fechaPedido);
     this.formVisible = false;
   }
 
   async guardarPedido(): Promise<void> {
+    const fechaPedido = this.parseFechaTexto(this.formFechaPedido);
+    if (!fechaPedido) {
+      await this.showAlert('Fecha inválida', 'Usa el formato dd-mm-yyyy.');
+      return;
+    }
+
     if (!this.pedidoForm.clienteId || !this.pedidoForm.descripcion.trim()) {
-      await this.showAlert('Faltan datos', 'Selecciona un cliente y escribe la descripcion del pedido.');
+      await this.showAlert('Faltan datos', 'Selecciona un cliente y escribe la descripción del pedido.');
       return;
     }
 
     this.guardando = true;
+    this.pedidoForm.fechaPedido = fechaPedido;
     await this.dataService.savePedido(this.pedidoForm);
     await this.loadData();
     this.guardando = false;
@@ -141,11 +167,13 @@ export class TabPedidosPage {
 
     const nuevoValor = event.detail.checked;
     const valorAnterior = pedido[campo];
+    const checkbox = event.target as { checked: boolean };
+    checkbox.checked = valorAnterior;
     const accion = nuevoValor ? 'marcar' : 'quitar';
     const etiqueta = campo === 'pagado' ? 'pago' : 'entrega';
     const alert = await this.alertController.create({
       header: campo === 'pagado' ? 'Confirmar pago' : 'Confirmar entrega',
-      message: `Deseas ${accion} el estado de ${etiqueta} para este pedido?`,
+      message: `¿Deseas ${accion} el estado de ${etiqueta} para este pedido?`,
       buttons: [
         {
           text: 'Cancelar',
@@ -186,7 +214,7 @@ export class TabPedidosPage {
 
     const alert = await this.alertController.create({
       header: 'Eliminar pedido',
-      message: `Eliminar el pedido de ${pedido.clienteNombre ?? 'este cliente'}?`,
+      message: `¿Eliminar el pedido de ${pedido.clienteNombre ?? 'este cliente'}?`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
@@ -203,6 +231,14 @@ export class TabPedidosPage {
 
   trackPedido(_index: number, pedido: Pedido): number {
     return pedido.id ?? _index;
+  }
+
+  formatFecha(fecha: string): string {
+    const [year, month, day] = fecha.split('-');
+    if (!year || !month || !day) {
+      return fecha;
+    }
+    return `${day}-${month}-${year}`;
   }
 
   private calcularTotales(): void {
@@ -231,6 +267,22 @@ export class TabPedidosPage {
       entregado: false,
       notas: '',
     };
+  }
+
+  private parseFechaTexto(fecha: string): string | null {
+    const match = /^(\d{2})-(\d{2})-(\d{4})$/.exec(fecha.trim());
+    if (!match) {
+      return null;
+    }
+
+    const [, day, month, year] = match;
+    const parsed = new Date(Number(year), Number(month) - 1, Number(day));
+    const isValid =
+      parsed.getFullYear() === Number(year) &&
+      parsed.getMonth() === Number(month) - 1 &&
+      parsed.getDate() === Number(day);
+
+    return isValid ? `${year}-${month}-${day}` : null;
   }
 
   private async showAlert(header: string, message: string): Promise<void> {

@@ -12,7 +12,8 @@
     <ion-toolbar>
       <ion-title size="large">
         <ion-icon name="home-outline"></ion-icon>
-        Inicio</ion-title>
+        Inicio
+      </ion-title>
     </ion-toolbar>
   </ion-header>
 
@@ -41,21 +42,21 @@
 
   <section class="dashboard-section">
     <header>
-      <h2>Pedidos por dia</h2>
-      <ion-badge color="medium">{{ resumen.length }} dias</ion-badge>
+      <h2>Pedidos por día</h2>
+      <ion-badge color="medium">{{ resumen.length }} días</ion-badge>
     </header>
 
     <ion-list *ngIf="resumen.length; else emptyDashboard">
       <ion-item *ngFor="let dia of resumen">
         <ion-label>
           <div class="day-row">
-            <h3>{{ dia.fecha }}</h3>
+            <h3>{{ formatFecha(dia.fecha) }}</h3>
             <strong>{{ dia.total }}</strong>
           </div>
           <div class="bar-track">
             <div class="bar-fill" [style.width]="barWidth(dia)"></div>
           </div>
-          <p>{{ dia.pagados }} pagados · {{ dia.entregados }} entregados · {{ dia.pendientes }} pendientes</p>
+          <p>{{ dia.pagados }} pagados - {{ dia.entregados }} entregados - {{ dia.pendientes }} pendientes</p>
         </ion-label>
       </ion-item>
     </ion-list>
@@ -63,9 +64,8 @@
     <ng-template #emptyDashboard>
       <div class="empty-state">
         <ion-icon name="calendar-outline"></ion-icon>
-        <p>Cuando registres pedidos, aqui veras la cantidad realizada por dia.</p>
+        <p>Cuando registres pedidos, aquí verás la cantidad realizada por día.</p>
       </div>
     </ng-template>
   </section>
-
 </ion-content>

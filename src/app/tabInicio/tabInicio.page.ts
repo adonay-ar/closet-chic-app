@@ -49,4 +49,12 @@ export class TabInicioPage {
   barWidth(dia: PedidoDia): string {
     return `${Math.max(8, (dia.total / this.maxPedidos) * 100)}%`;
   }
+
+  formatFecha(fecha: string): string {
+    const [year, month, day] = fecha.split('-');
+    if (!year || !month || !day) {
+      return fecha;
+    }
+    return `${day}-${month}-${year}`;
+  }
 }

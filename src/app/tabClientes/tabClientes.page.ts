@@ -99,7 +99,7 @@ export class TabClientesPage {
 
     const alert = await this.alertController.create({
       header: 'Eliminar cliente',
-      message: `Eliminar a ${cliente.nombre}?`,
+      message: `¿Eliminar a ${cliente.nombre}?`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
