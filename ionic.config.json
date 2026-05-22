@@ -1,0 +1,7 @@
+{
+  "name": "closetApp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
