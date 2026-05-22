@@ -1,0 +1,96 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      <ion-icon name="people-outline"></ion-icon>
+      Clientes
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">
+        <ion-icon name="people-outline"></ion-icon>
+        Clientes
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <section class="page-actions">
+    <div>
+      <h2>Clientes</h2>
+      <p>{{ clientes.length }} registrados</p>
+    </div>
+    <ion-button (click)="nuevoCliente()">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Nuevo
+    </ion-button>
+  </section>
+
+  <form *ngIf="formVisible" class="form-panel" (ngSubmit)="guardarCliente()">
+    <ion-item>
+      <ion-label position="stacked">Nombre</ion-label>
+      <ion-input name="nombre" [(ngModel)]="clienteForm.nombre" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Telefono</ion-label>
+      <ion-input name="telefono" [(ngModel)]="clienteForm.telefono" type="tel"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Direccion</ion-label>
+      <ion-input name="direccion" [(ngModel)]="clienteForm.direccion"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Notas</ion-label>
+      <ion-textarea name="notas" [(ngModel)]="clienteForm.notas" rows="3"></ion-textarea>
+    </ion-item>
+
+    <div class="form-actions">
+      <ion-button fill="clear" type="button" (click)="cancelar()">
+        <ion-icon slot="start" name="close-outline"></ion-icon>
+        Cancelar
+      </ion-button>
+      <ion-button type="submit" [disabled]="guardando">
+        <ion-icon slot="start" name="save-outline"></ion-icon>
+        Guardar
+      </ion-button>
+    </div>
+  </form>
+
+  <ion-list *ngIf="clientes.length; else emptyClientes">
+    <ion-item *ngFor="let cliente of clientes">
+      <ion-label>
+        <h2>{{ cliente.nombre }}</h2>
+        <p *ngIf="cliente.telefono">
+          <ion-icon name="call-outline"></ion-icon>
+          {{ cliente.telefono }}
+        </p>
+        <p *ngIf="cliente.direccion">
+          <ion-icon name="location-outline"></ion-icon>
+          {{ cliente.direccion }}
+        </p>
+        <ion-badge *ngIf="cliente.notas" color="medium">Con notas</ion-badge>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="editarCliente(cliente)" aria-label="Editar cliente">
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" color="danger" (click)="eliminarCliente(cliente)" aria-label="Eliminar cliente">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #emptyClientes>
+    <div class="empty-state">
+      <ion-icon name="people-outline"></ion-icon>
+      <p>Aun no hay clientes registrados.</p>
+    </div>
+  </ng-template>
+
+</ion-content>

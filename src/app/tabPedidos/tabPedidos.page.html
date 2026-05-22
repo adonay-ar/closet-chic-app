@@ -1,0 +1,164 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      <ion-icon name="cart-outline"></ion-icon>
+      Pedidos
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">
+        <ion-icon name="cart-outline"></ion-icon>
+        Pedidos
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <section class="page-actions">
+    <div>
+      <h2>Pedidos</h2>
+      <p>{{ pedidos.length }} en la vista actual</p>
+    </div>
+    <ion-button (click)="nuevoPedido()" [disabled]="!clientes.length">
+      <ion-icon slot="start" name="add-outline"></ion-icon>
+      Nuevo
+    </ion-button>
+  </section>
+
+  <section class="money-summary">
+    <article>
+      <span>Ya pagaron</span>
+      <strong>{{ totalPagadoMonto | currency:'USD':'symbol':'1.2-2' }}</strong>
+    </article>
+    <article>
+      <span>Pendiente de pago</span>
+      <strong>{{ totalPendientePagoMonto | currency:'USD':'symbol':'1.2-2' }}</strong>
+    </article>
+  </section>
+
+  <section class="filter-panel">
+    <ion-item>
+      <ion-label position="stacked">Filtrar por fecha</ion-label>
+      <ion-input name="filtroFecha" [(ngModel)]="filtroFecha" type="date" (ionChange)="filtrarPorFecha()"></ion-input>
+    </ion-item>
+    <ion-button fill="clear" size="small" (click)="limpiarFiltro()" [disabled]="!filtroFecha">
+      Limpiar filtro
+    </ion-button>
+  </section>
+
+  <form *ngIf="formVisible" class="form-panel" (ngSubmit)="guardarPedido()">
+    <ion-item>
+      <ion-label position="stacked">Cliente</ion-label>
+      <ion-select name="clienteId" [(ngModel)]="pedidoForm.clienteId" interface="popover" required>
+        <ion-select-option *ngFor="let cliente of clientes" [value]="cliente.id">
+          {{ cliente.nombre }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Tienda</ion-label>
+      <ion-select name="tienda" [(ngModel)]="pedidoForm.tienda" interface="popover">
+        <ion-select-option *ngFor="let tienda of tiendas" [value]="tienda">
+          {{ tienda }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Descripcion</ion-label>
+      <ion-input name="descripcion" [(ngModel)]="pedidoForm.descripcion" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Codigo / referencia</ion-label>
+      <ion-input name="codigo" [(ngModel)]="pedidoForm.codigo"></ion-input>
+    </ion-item>
+
+    <div class="form-grid">
+      <ion-item>
+        <ion-label position="stacked">Fecha</ion-label>
+        <ion-input name="fechaPedido" [(ngModel)]="pedidoForm.fechaPedido" type="date" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Monto</ion-label>
+        <ion-input name="monto" [(ngModel)]="pedidoForm.monto" type="number" inputmode="decimal"></ion-input>
+      </ion-item>
+    </div>
+
+    <div class="status-row">
+      <ion-checkbox name="pagado" [(ngModel)]="pedidoForm.pagado" labelPlacement="end">
+        Pagado
+      </ion-checkbox>
+      <ion-checkbox name="entregado" [(ngModel)]="pedidoForm.entregado" labelPlacement="end">
+        Entregado
+      </ion-checkbox>
+    </div>
+
+    <ion-item>
+      <ion-label position="stacked">Notas</ion-label>
+      <ion-textarea name="notas" [(ngModel)]="pedidoForm.notas" rows="3"></ion-textarea>
+    </ion-item>
+
+    <div class="form-actions">
+      <ion-button fill="clear" type="button" (click)="cancelar()">
+        <ion-icon slot="start" name="close-outline"></ion-icon>
+        Cancelar
+      </ion-button>
+      <ion-button type="submit" [disabled]="guardando">
+        <ion-icon slot="start" name="save-outline"></ion-icon>
+        Guardar
+      </ion-button>
+    </div>
+  </form>
+
+  <div *ngIf="!clientes.length" class="notice">
+    Registra al menos un cliente para crear pedidos.
+  </div>
+
+  <ion-list *ngIf="pedidos.length; else emptyPedidos">
+    <ion-item *ngFor="let pedido of pedidos; trackBy: trackPedido">
+      <ion-label>
+        <h2>{{ pedido.descripcion }}</h2>
+        <p>{{ pedido.clienteNombre }} - {{ pedido.tienda }} - {{ pedido.fechaPedido }}</p>
+        <p *ngIf="pedido.codigo">Ref: {{ pedido.codigo }}</p>
+        <div class="badges">
+          <ion-badge [color]="pedido.pagado ? 'success' : 'warning'">
+            <ion-icon name="card-outline"></ion-icon>
+            {{ pedido.pagado ? 'Pagado' : 'Pendiente de pago' }}
+          </ion-badge>
+          <ion-badge [color]="pedido.entregado ? 'success' : 'medium'">
+            <ion-icon name="bag-check-outline"></ion-icon>
+            {{ pedido.entregado ? 'Entregado' : 'Sin entregar' }}
+          </ion-badge>
+        </div>
+        <div class="inline-status">
+          <ion-checkbox [checked]="pedido.pagado" (ionChange)="confirmarCambioEstado(pedido, 'pagado', $event)" labelPlacement="end">
+            Pago
+          </ion-checkbox>
+          <ion-checkbox [checked]="pedido.entregado" (ionChange)="confirmarCambioEstado(pedido, 'entregado', $event)" labelPlacement="end">
+            Entrega
+          </ion-checkbox>
+        </div>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="editarPedido(pedido)" aria-label="Editar pedido">
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" color="danger" (click)="eliminarPedido(pedido)" aria-label="Eliminar pedido">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #emptyPedidos>
+    <div class="empty-state">
+      <ion-icon name="cart-outline"></ion-icon>
+      <p>No hay pedidos para mostrar.</p>
+    </div>
+  </ng-template>
+</ion-content>

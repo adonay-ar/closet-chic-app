@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { TabsPage } from './tabs.page';
+import { TabsPage } from '../tabs/tabs.page';
 
 export const routes: Routes = [
   {
@@ -7,30 +7,30 @@ export const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: 'tab1',
+        path: 'tabInicio',
         loadComponent: () =>
-          import('../tab1/tab1.page').then((m) => m.Tab1Page),
+          import('../tabInicio/tabInicio.page').then((m) => m.TabInicioPage),
       },
       {
-        path: 'tab2',
+        path: 'tabClientes',
         loadComponent: () =>
-          import('../tab2/tab2.page').then((m) => m.Tab2Page),
+          import('../tabClientes/tabClientes.page').then((m) => m.TabClientesPage),
       },
       {
-        path: 'tab3',
+        path: 'tabPedidos',
         loadComponent: () =>
-          import('../tab3/tab3.page').then((m) => m.Tab3Page),
+          import('../tabPedidos/tabPedidos.page').then((m) => m.TabPedidosPage),
       },
       {
         path: '',
-        redirectTo: '/tabs/tab1',
+        redirectTo: '/tabs/tabInicio',
         pathMatch: 'full',
       },
     ],
   },
   {
     path: '',
-    redirectTo: '/tabs/tab1',
+    redirectTo: '/tabs/tabInicio',
     pathMatch: 'full',
   },
 ];

@@ -34,4 +34,79 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+
+html,
+body,
+ion-app,
+ion-content {
+  background: #ffffff;
+  color-scheme: light;
+}
+
+body {
+  color: var(--ion-text-color);
+}
+
+ion-content {
+  --background: linear-gradient(180deg, #fff7fb 0%, #ffffff 210px);
+}
+
+ion-toolbar {
+  --background: rgba(255, 255, 255, 0.96);
+  --color: var(--ion-text-color);
+  --border-color: rgba(236, 72, 153, 0.14);
+}
+
+ion-title {
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+ion-button {
+  --border-radius: 8px;
+  font-weight: 700;
+  text-transform: none;
+}
+
+ion-button[fill="clear"] {
+  --color: var(--ion-color-primary);
+}
+
+ion-input,
+ion-textarea,
+ion-select {
+  --highlight-color-focused: var(--ion-color-primary);
+}
+
+ion-checkbox {
+  --checkbox-background-checked: var(--ion-color-primary);
+  --border-color-checked: var(--ion-color-primary);
+  --checkmark-color: #ffffff;
+}
+
+ion-list {
+  background: transparent;
+}
+
+ion-item {
+  --background: #ffffff;
+  --color: var(--ion-text-color);
+  --border-color: rgba(236, 72, 153, 0.12);
+}
+
+ion-tab-bar {
+  --background: #ffffff;
+  --border: 1px solid rgba(236, 72, 153, 0.14);
+  box-shadow: 0 -8px 24px rgba(236, 72, 153, 0.08);
+}
+
+ion-tab-button {
+  --color: var(--ion-color-medium);
+  --color-selected: var(--ion-color-primary);
+  font-weight: 700;
+}
+
+.alert-wrapper {
+  --background: #ffffff;
+  border-radius: 8px;
+}
